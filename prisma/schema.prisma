@@ -1,0 +1,405 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("DATABASE_URL")
+}
+
+type ProjectsBillabilityProject {
+    id     Int
+    /// Multiple data types found: Float: 21.3%, Int: 78.7% out of 61 sampled entries
+    manDay Json
+    userId String
+}
+
+type ProjectsFileContact1 {
+    fileName String
+    id       Int
+}
+
+type ProjectsValuePeriod {
+    financeName String
+    id          Int
+}
+
+type UsersYear2023Leave {
+    personalLeave Int
+    sickLeave     Int
+    /// Multiple data types found: Float: 3%, Int: 97% out of 237 sampled entries
+    vacationLeave Json
+}
+
+type UsersYear2024Leave {
+    personalLeave Int
+    sickLeave     Int
+    vacationLeave Int
+}
+
+type UsersYear2025Leave {
+    personalLeave Int @default(7)
+    sickLeave     Int @default(30)
+    vacationLeave Int @default(12)
+}
+
+model announcements {
+    id         String   @id @default(auto()) @map("_id") @db.ObjectId
+    v          Int      @map("__v")
+    attachFile String
+    createdAt  DateTime @db.Date
+    id_        Int      @map("id")
+    issueDate  String
+    remark     String
+    subject    String
+    updatedAt  DateTime @db.Date
+    userCreate String
+}
+
+model assets {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    v         Int      @map("__v")
+    createdAt DateTime @db.Date
+    project   String
+    startDate String?
+    updatedAt DateTime @db.Date
+}
+
+model billabilities {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+}
+
+model carrecords {
+    id            String   @id @default(auto()) @map("_id") @db.ObjectId
+    v             Int      @map("__v")
+    code          Int
+    createdAt     DateTime @db.Date
+    destination   String
+    endDistance   Int
+    floor         String
+    remark        String
+    slot          String
+    startDistance Int
+    updatedAt     DateTime @db.Date
+    userCreate    String?
+}
+
+model cats {
+    id    String @id @default(auto()) @map("_id") @db.ObjectId
+    v     Int    @map("__v")
+    age   Int
+    breed String
+    name  String
+}
+
+model counters {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+}
+
+model coverletters {
+    id         String   @id @default(auto()) @map("_id") @db.ObjectId
+    v          Int      @map("__v")
+    createdAt  DateTime @db.Date
+    id_        Int      @map("id")
+    issueDate  String
+    project    String
+    remark     String
+    subject    String
+    updatedAt  DateTime @db.Date
+    userCreate String
+}
+
+model documentations {
+    id          String   @id @default(auto()) @map("_id") @db.ObjectId
+    v           Int      @map("__v")
+    createdAt   DateTime @db.Date
+    description String
+    fileTypes   String
+    id_         Int      @unique(map: "id_1") @map("id")
+    isActive    Boolean
+    remark      String
+    title       String
+    updatedAt   DateTime @db.Date
+    url         String
+    userCreate  String
+}
+
+model internalCharge {
+    id             String    @id @default(auto()) @map("_id") @db.ObjectId
+    buyerUserId    String    @db.ObjectId
+    sellerUserId   String    @db.ObjectId
+    createdAt      DateTime? @db.Date
+    projectRequest String    @db.ObjectId
+    sellerTeam     String
+    status         String
+    title          String
+    note           String?
+    updatedAt      DateTime? @db.Date
+
+    sellerUsers sellerUser[] @relation("SellerInternalCharge")
+
+    buyerUser             users?    @relation("BuyerUser", fields: [buyerUserId], references: [id])
+    sellerUser            users?    @relation("SellerUser", fields: [buyerUserId], references: [id])
+    projectInternalCharge projects? @relation("ProjectRequest", fields: [projectRequest], references: [id])
+}
+
+model sellerUser {
+    id               String @id @default(auto()) @map("_id") @db.ObjectId
+    userId           String @db.ObjectId
+    indexId          Int // New field
+    manDay           Int
+    costPerManDay    Float
+    totalCost        Float
+    internalChargeId String @db.ObjectId
+
+    internalCharge internalCharge @relation("SellerInternalCharge", fields: [internalChargeId], references: [id])
+}
+
+model knowledges {
+    id             String   @id @default(auto()) @map("_id") @db.ObjectId
+    v              Int      @map("__v")
+    createdAt      DateTime @db.Date
+    categorySharing String?
+    description    String?
+    fileTypes      String?
+    fileUrl        String?
+    id_            Int      @unique(map: "id_1") @map("id")
+    imgUrl         String
+    isActive       Boolean
+    localCreatedAt String
+    localUpdatedAt String
+    teamOwner      String
+    title          String
+    updatedAt      DateTime @db.Date
+    userCreate     String
+}
+
+model notifications {
+    id          String   @id @default(auto()) @map("_id") @db.ObjectId
+    v           Int      @map("__v")
+    createdAt   DateTime @db.Date
+    id_         Int?     @map("id")
+    message     String
+    read        Boolean?
+    statusRead  Boolean?
+    timestamp   DateTime @db.Date
+    title       String
+    typeRequest String
+    updatedAt   DateTime @db.Date
+    userReceive String   @db.ObjectId
+    userRequest String   @db.ObjectId
+}
+
+model posts {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    v         Int      @map("__v")
+    content   String
+    createdAt DateTime @db.Date
+    title     String
+    updatedAt DateTime @db.Date
+    urlImg    String
+    userEmail String
+}
+
+model projects {
+    id                     String   @id @default(auto()) @map("_id") @db.ObjectId
+    v                      Int      @map("__v")
+    bankGuaranteeReceive   String?
+    bankGuaranteeSend      String?
+    // billabilityProject     billabilityProjects[]
+    contactCode            String?
+    createdAt              DateTime @db.Date
+    customerAddress        String?
+    customerName           String?
+    customerTax            String?
+    endDateContact         String?
+    expert                 String?
+    fileCertificate        String?
+    /// Multiple data types found: String: 45.1%, Array(String): 41.7%, Array(ProjectsFileContact1): 13.2% out of 188 sampled entries
+    fileContact1           Json?
+    fileContact2           String?
+    fileContact3           String?
+    fileProjectPowerpoint  String?
+    fileProjectWord        String?
+    id_                    Int      @map("id")
+    latterGuaranteeSend    String?
+    letterGuarantee        String?
+    letterGuaranteeReceive String?
+    pdmoBranch             String?
+    projectCode            String?
+    projectEng             String
+    projectManager         String? @db.ObjectId 
+    projectOwner           String? @db.ObjectId 
+    projectScope           String?
+    projectTarget          String?
+    projectTh              String?
+    refund                 String?
+    remark                 String?
+    startDateContact       String?
+    status                 String
+    updatedAt              DateTime @db.Date
+    userCreate             String?
+    value                  String?
+    /// Multiple data types found: String: 46.4%, Array(String): 40%, Array(ProjectsValuePeriod): 13.6% out of 188 sampled entries
+    valuePeriod            Json?
+
+    internalChargeProject internalCharge[] @relation("ProjectRequest")
+    // billabilityProjects   billabilityProjects[] @relation("BillabilityProject")
+
+    billabilityProjects billabilityProjects[] @relation("BillabilityProject")
+    userProjectManager  users? @relation("ProjectManager", fields: [projectManager], references: [id])
+    userProjectOwner    users? @relation("ProjectOwner", fields: [projectOwner], references: [id])
+}
+
+model reserves {
+    id         String   @id @default(auto()) @map("_id") @db.ObjectId
+    v          Int      @map("__v")
+    category   String
+    createdAt  DateTime @db.Date
+    endDate    String
+    endTime    String
+    id_        Int      @map("id")
+    remark     String
+    startDate  String
+    startTime  String
+    status     String
+    subject    String
+    updatedAt  DateTime @db.Date
+    userCreate String?
+}
+
+model swapdates {
+    id            String   @id @default(auto()) @map("_id") @db.ObjectId
+    v             Int      @map("__v")
+    actionDate    Float[]
+    attachFile    String
+    createdAt     DateTime @db.Date
+    employee      String
+    id_           Int?     @map("id")
+    projectAction String
+    remark        String
+    status        String
+    swapDate      Float[]
+    updatedAt     DateTime @db.Date
+    userCreate    String
+}
+
+model timeoffs {
+    id         String   @id @default(auto()) @map("_id") @db.ObjectId
+    v          Int      @map("__v")
+    createdAt  DateTime @db.Date
+    employee   String   @db.ObjectId
+    halfDay    String
+    id_        Int      @map("id")
+    issueDate  Float[]
+    reason     String
+    status     String
+    type       String
+    updatedAt  DateTime @db.Date
+    userCreate String
+}
+
+model topups {
+    id              String   @id @default(auto()) @map("_id") @db.ObjectId
+    v               Int      @map("__v")
+    createdAt       DateTime @db.Date
+    employee        String   @db.ObjectId
+    id_             Int      @unique(map: "id_1") @map("id")
+    remark          String
+    status          String
+    topUpDay        Int
+    type            String
+    updatedAt       DateTime @db.Date
+    userCreate      String
+    vacationBalance String?
+}
+
+model users {
+    id               String              @id @default(auto()) @map("_id") @db.ObjectId
+    v                Int                 @map("__v")
+    createdAt        DateTime            @db.Date
+    employeeBirthDay String?
+    employeeEmail    String
+    employeeProfile  String              @default("https://www.w3schools.com/w3images/avatar1.png")
+    employeeTeams    String?
+    employeeTel      String
+    employeeTitle    String
+    endDate          String?
+    nameEng          String
+    nameTh           String
+    nickNameTh       String
+    password         String
+    /// Multiple data types found: Float: 11.2%, Int: 88.8% out of 241 sampled entries
+    personalLeave    Json?
+    remark           String?
+    role             String
+    /// Multiple data types found: Float: 11.6%, Int: 88.4% out of 241 sampled entries
+    sickLeave        Json?
+    startDate        String
+    teamLeader       String?
+    updatedAt        DateTime            @db.Date
+    userCode         Int
+    userCreate       String?
+    userUpdated      String?
+    /// Multiple data types found: Float: 7.9%, Int: 92.1% out of 241 sampled entries
+    vacationLeave    Json?
+    year2023Leave    UsersYear2023Leave?
+    year2024Leave    UsersYear2024Leave?
+    year2025Leave    UsersYear2025Leave
+    costPerManDay    Int?                @default(1000)
+    targetManDay     Int?                @default(0)
+
+    internalChargeBuyerUser  internalCharge[] @relation("BuyerUser")
+    internalChargeSellerUser internalCharge[] @relation("SellerUser")
+
+    resignations resignations[] @relation("UserRequestResign")
+
+    billabilityProjects billabilityProjects[] @relation("BillalilityUser")
+
+    projectsManager projects[] @relation("ProjectManager")
+    projectsOwner projects[] @relation("ProjectOwner")
+}
+
+model workprocesses {
+    id             String   @id @default(auto()) @map("_id") @db.ObjectId
+    v              Int      @map("__v")
+    createdAt      DateTime @db.Date
+    description    String
+    fileTypes      String
+    fileUrl        String
+    id_            Int      @unique(map: "id_1") @map("id")
+    isActive       Boolean
+    localCreatedAt String
+    localUpdatedAt String
+    teamOwner      String
+    title          String
+    updatedAt      DateTime @db.Date
+    userCreate     String
+}
+
+model resignations {
+    id            String   @id @default(auto()) @map("_id") @db.ObjectId
+    v             Int      @map("__v")
+    createdAt     DateTime @db.Date
+    id_           Int      @map("id")
+    effectiveDate DateTime @db.Date
+    note          String
+    status        String
+    updatedAt     DateTime @db.Date
+    userRequest   String   @db.ObjectId
+    userCreate    String
+
+    userRequestResign users? @relation("UserRequestResign", fields: [userRequest], references: [id])
+}
+
+model billabilityProjects {
+    id        String @id @default(auto()) @map("_id") @db.ObjectId
+    indexId   Int
+    projectId String @db.ObjectId
+    userId    String @db.ObjectId
+    manDay    Float
+
+    // projectData projects? @relation("BillabilityProject", fields: [projectId], references: [id])
+    userData    users?   @relation("BillalilityUser", fields: [userId], references: [id])
+    projectData projects @relation("BillabilityProject", fields: [projectId], references: [id])
+}
